@@ -63,11 +63,10 @@ const userSchema = new Schema(
   },
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
@@ -105,7 +104,7 @@ userSchema.methods.generateTemporaryToken = function(){
         .digest("hex")
 
     const tokenExpiry = Date.now() + (20*60*1000) //20 mins
-    return {unHashedToken, hashesToken, tokenExpiry}
+    return {unHashedToken, hashedToken, tokenExpiry}
 }
 
 export const User = mongoose.model("User", userSchema);
